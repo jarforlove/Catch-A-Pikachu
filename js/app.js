@@ -101,6 +101,7 @@ Player.prototype.handleInput= function(input) {
 // This function checks if the player's live is 0; if so, it hard reset the state of the game.
 Player.prototype.update = function () {
   if (this.lives===0){
+    window.alert("Game over!");
     document.location.reload();
   }
 };
