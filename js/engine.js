@@ -159,7 +159,7 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
+      // noop
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -175,10 +175,11 @@ var Engine = (function(global) {
     ]);
     Resources.onReady(init);
 
-    /* Assign the canvas and canvas' context object to the global variable (the window
+    /* Assign the canvas, canvas' context object, and the reset function to the global variable (the window
      * object when run in a browser) so that developers can use it more easily
      * from within their app.js files.
      */
     global.canvas = canvas;
     global.ctx = ctx;
+    global.reset = reset;
 })(this);
