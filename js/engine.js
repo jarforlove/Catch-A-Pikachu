@@ -25,8 +25,8 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
 
-    canvas.width = 505;
-    canvas.height = 606;
+    canvas.width = 707;
+    canvas.height = 707;
     doc.body.appendChild(canvas);
 
     /* This function serves as the kickoff point for the game loop itself
@@ -80,7 +80,7 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        checkCollisions();
     }
 
     /* This is called by the update function and loops through all of the
@@ -97,6 +97,25 @@ var Engine = (function(global) {
         player.update();
     }
 
+    /* This function checks collision
+     */
+    function checkCollisions() {
+        // Collision detection for bug. Set the width to 50 so player and bug are not going to collide too soon.
+        allEnemies.forEach(function(enemy) {
+            if (enemy.x < player.x + 50 && enemy.x + 50 > player.x && enemy.y < player.y + 50 && enemy.y + 50 > player.y) {
+                player.lives--;
+                // If collision happens, calls the reset() function in engine.js
+                player.reset();
+            }
+        });
+
+        // Collision detection for pikachu.
+        if (pikachu.x < player.x + 50 && pikachu.x + 50 > player.x && pikachu.y < player.y + 50 && pikachu.y + 50 > player.y) {
+            // If collision happens, catch number ++ and reset pikachu's location
+            pikachu.reset();
+        }
+    }
+
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
      * game tick (or loop of the game engine) because that's how games work -
@@ -108,15 +127,16 @@ var Engine = (function(global) {
          * for that particular row of the game level.
          */
         var rowImages = [
-                'images/water-block.png',   // Top row is water
-                'images/stone-block.png',   // Row 1 of 3 of stone
-                'images/stone-block.png',   // Row 2 of 3 of stone
-                'images/stone-block.png',   // Row 3 of 3 of stone
-                'images/grass-block.png',   // Row 1 of 2 of grass
-                'images/grass-block.png'    // Row 2 of 2 of grass
+                'images/water-block.png', // Top row is water
+                'images/grass-block.png', // Row 1 of 5 of grass
+                'images/grass-block.png', // Row 2 of 5 of grass
+                'images/grass-block.png', // Row 3 of 5 of grass
+                'images/grass-block.png', // Row 4 of 5 of grass
+                'images/grass-block.png', // Row 5 of 5 of grass
+                'images/stone-block.png', // Row 1 of 1 of stone
             ],
-            numRows = 6,
-            numCols = 5,
+            numRows = 7,
+            numCols = 7,
             row, col;
 
         /* Loop through the number of rows and columns we've defined above
@@ -152,6 +172,8 @@ var Engine = (function(global) {
         });
 
         player.render();
+
+        item.render();
     }
 
     /* This function does nothing but it could have been a good place to
@@ -159,7 +181,7 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-      // noop
+        // noop
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -170,8 +192,17 @@ var Engine = (function(global) {
         'images/stone-block.png',
         'images/water-block.png',
         'images/grass-block.png',
-        'images/enemy-bug.png',
-        'images/char-boy.png'
+        // Image Attribution: https://pixabay.com/en/users/PIRO4D-2707530/
+        'img/pokeball-45.png',
+        // Image Attribution: http://www.pokemon.name
+        'img/pikachu-80.png',
+        // Below are the enemies
+        'img/Blastoise-80.png',
+        'img/Bulbasaur-80.png',
+        'img/Charizard-80.png',
+        'img/Metapod-80.png',
+        'img/Poliwrath-80.png',
+        'img/Gliscor-80.png'
     ]);
     Resources.onReady(init);
 
