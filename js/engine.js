@@ -27,7 +27,7 @@ var Engine = (function(global) {
 
   canvas.width = 707;
   canvas.height = 707;
-  doc.body.appendChild(canvas);
+  document.getElementById('canvas').appendChild(canvas);
 
   /* This function serves as the kickoff point for the game loop itself
    * and handles properly calling the update and render methods.
@@ -64,9 +64,11 @@ var Engine = (function(global) {
    * game loop.
    */
   function init() {
-    //reset();
+    // reset();
     lastTime = Date.now();
     main();
+    // play the background music
+    background.play();
   }
 
   /* This function is called by main (our game loop) and itself calls all
@@ -106,11 +108,15 @@ var Engine = (function(global) {
       if (enemy.x < player.x + 50 && enemy.x + 50 > player.x && enemy.y < player.y + 50 && enemy.y + 50 > player.y) {
         // remember '=' is assignment. When at first you use '=', it doesn't work out right.
         if (player.catch === true) {
+          // play the punch sound
+          punch.play();
           player.numOfPokeballs--;
           // If collision happens, calls the reset() function in engine.js
           player.reset();
           pikachu.reset();
         } else {
+          // play the punch sound
+          punch.play();
           player.numOfPokeballs--;
           // If collision happens, calls the reset() function in engine.js
           player.reset();
@@ -122,6 +128,8 @@ var Engine = (function(global) {
     if (pikachu.x < player.x + 50 && pikachu.x + 50 > player.x && pikachu.y < player.y + 50 && pikachu.y + 50 > player.y) {
       // If collision happens, catch number ++ and reset pikachu's location
       pikachu.catched();
+      // play the fizzle sound
+      fizzle.play();
     }
   }
 
@@ -142,6 +150,8 @@ var Engine = (function(global) {
        // If the pedestal is empty, place the pokeball
        if (empty && player.catch) {
          allPedestals.push(new Pedestal(player.x, pedestalSpriteState.full));
+         // play score sound
+         points.play();
          if (allPedestals.length ===7) {
            window.alert("Game over!");
            document.location.reload();
@@ -261,6 +271,7 @@ var Engine = (function(global) {
     'images/blank.png',
     // Image Attribution: https://pixabay.com/en/users/PIRO4D-2707530/
     'images/pokeball-45.png',
+    'images/pokeball-20.png',
     // Image Attribution: http://www.pokemon.name
     // Note either pokeball and pikachu-catched is 45X45, and 82 to the top.
     'images/pikachu-catched.png',

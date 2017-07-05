@@ -5,10 +5,10 @@
 // Set the data for objects
 var data = {
   'Y_POSITIONS': [65, 148, 233, 316, 399],
-  'BUG_MIN_STARTING_X': -505,
-  'BUG_MAX_STARTING_X': -101,
-  'BUG_MIN_SPEED': 100,
-  'BUG_MAX_SPEED': 300,
+  'ENEMY_MIN_STARTING_X': -505,
+  'ENEMY_MAX_STARTING_X': -101,
+  'ENEMY_MIN_SPEED': 100,
+  'ENEMY_MAX_SPEED': 300,
   'PLAYER_STARTING_X': 303,
   'PLAYER_STARTING_Y': 485
 };
@@ -27,6 +27,18 @@ var pedestalSpriteState = {
   full: 'images/pikachu-catched_pedestal.png'
 };
 
+// About audio: http://www.w3school.com.cn/jsref/dom_obj_audio.asp
+// About audio: https://stackoverflow.com/questions/9419263/playing-audio-with-javascript
+// Sound attribution: [Background music: Imagine My Shock by SukiWukiDookie](http://www.newgrounds.com/audio/listen/751384)
+// Sound attribution: [Sound effects: By Sound Bible](http://soundbible.com/free-sound-effects-1.html)
+var  fizzle = new Audio('sounds/fizzle.mp3'),
+     punch = new Audio('sounds/punch.mp3'),
+     points = new Audio('sounds/points.mp3'),
+     background = new Audio('sounds/background.mp3');
+    //  = new Audio('sounds/')
+background.loop = true;
+background.volume = 0.3;
+
 // This object manages game state
 var State = function() {
 
@@ -40,12 +52,8 @@ var Enemy = function(sprite) {
   // The image/sprite for our enemies, this uses
   // a helper we've provided to easily load images
   this.sprite = sprite;
-  // a new bug will have a random starting x position
-  this.x = randomInt(data.BUG_MIN_STARTING_X, data.BUG_MAX_STARTING_X);
-  // a new bug will be randomly positioned in one of the three lanes
-  this.y = data.Y_POSITIONS[randomYPosition()];
-  // a new bug will have a random speed
-  this.speed = randomInt(data.BUG_MIN_SPEED, data.BUG_MAX_SPEED);
+  // the reset function will reset the enemy's position
+  this.reset();
 };
 
 // Update the enemy's position, required method for game
@@ -55,13 +63,21 @@ Enemy.prototype.update = function(dt) {
   // which will ensure the game runs at the same speed for
   // all computers.
   this.x = this.x + this.speed * dt;
-  //This code below help the bug to start over again. Use canvas.width instead of a fixed number incase the width changes
+  //This code below help the enemy to start over again. Use canvas.width instead of a fixed number incase the width changes
   if (this.x >= canvas.width) {
-    this.x = randomInt(data.BUG_MIN_STARTING_X, data.BUG_MAX_STARTING_X);
-    this.y = data.Y_POSITIONS[randomYPosition()];
-    this.speed = randomInt(data.BUG_MIN_SPEED, data.BUG_MAX_SPEED);
+    this.reset();
   }
 };
+
+// Reset the enemy's position
+Enemy.prototype.reset = function() {
+  // a new enemy will have a random starting x position
+  this.x = randomInt(data.ENEMY_MIN_STARTING_X, data.ENEMY_MAX_STARTING_X);
+  // a new enemy will be randomly positioned in one of the three lanes
+  this.y = data.Y_POSITIONS[randomYPosition()];
+  // a new enemy will have a random speed
+  this.speed = randomInt(data.ENEMY_MIN_SPEED, data.ENEMY_MAX_SPEED);
+}
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
@@ -97,9 +113,6 @@ Player.prototype.handleInput = function(input) {
       } else if (this.y === 70 && this.catch === true) {
         //If the player reaches the river, and play goes back to the starting point
         this.y = this.y -83;
-        //this.numOfPokeballs--;
-        //this.reset();
-        //pikachu.reset();
       }
       break;
     case 'right':
@@ -119,8 +132,28 @@ Player.prototype.handleInput = function(input) {
   }
 };
 
-// This function checks if the player's live is 0; if so, it hard reset the state of the game.
+// Updates the number of Pokeballs left. When the number is 0, reset the state of the game.
+// Attribution: https://github.com/Klammertime/P3-Classic-Arcade-Game-Clone
 Player.prototype.update = function() {
+  // getElementsByClassName returns a NodeList
+  var pokeballBar = document.getElementsByClassName('numOfPokeballs'),
+  // Since you are going to use replaceChild() method, you have to grab the old child and create a new child.
+  // https://developer.mozilla.org/en-US/docs/Web/API/Node/replaceChild
+      oldChild = document.getElementById('child'),
+      newChild = document.createElement('div'),
+      img;
+      // must have this line of code below, so that in a loop, the 'old' child will always have that ID.
+      newChild.id = 'child'
+  for (var k=0; k < player.numOfPokeballs; k++) {
+    // HTML5 Constructor
+    img = new Image();
+    img.src = 'images/pokeball-20.png';
+    img.alt = 'pokeball';
+    newChild.appendChild(img);
+  }
+  // Since pokeballBar is a NodeList and it has only one element. Therefore you have to add to its first element.
+  pokeballBar[0].replaceChild(newChild, oldChild);
+  // when the number is 0, reset the state of the game.
   if (this.numOfPokeballs === 0) {
     window.alert("Game over!");
     document.location.reload();
@@ -138,8 +171,6 @@ Player.prototype.reset = function() {
 // This function renders the player in each frame. It also shows the number of pokeballs a player has. Attribution: https://discussions.udacity.com/t/is-it-possible-to-use-ctx-filltext-to-display-score-and-lives/193866
 Player.prototype.render = function() {
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-  ctx.font = '20px Sans serif';
-  ctx.fillText('Pokeballs Left: ' + this.numOfPokeballs, 40, 100);
 };
 
 /* Create pikachu to be catched by the player
@@ -148,6 +179,7 @@ Player.prototype.render = function() {
 var Pikachu = function() {
   // Image Attribution: http://www.pokemon.name
   this.sprite = 'images/pikachu-80.png';
+  this.reset();
 };
 
 
@@ -196,7 +228,6 @@ for (var i = 0; i < enemySpriteList.length; i++) {
 var player = new Player();
 // declare a new pikachu and give it a random location
 var pikachu = new Pikachu();
-pikachu.reset();
 // instantiate a pedestal list
 var allPedestals = [];
 allPedestals.push(new Pedestal(0, pedestalSpriteState.empty));
@@ -231,3 +262,19 @@ document.addEventListener('keyup', function(e) {
 
   player.handleInput(allowedKeys[e.keyCode]);
 });
+
+/* When the musicButton gets clicked, the music turns on or off. And the button changes texts.
+ *
+ */
+var musicButton = document.getElementById('musicButton');
+musicButton.onclick = function() {
+  if (musicButton.classList.contains('music')){
+    background.pause();
+    musicButton.classList.remove('music');
+    musicButton.innerHTML = "MUSIC OFF";
+  } else {
+    background.play();
+    musicButton.classList.add('music');
+    musicButton.innerHTML = "MUSIC ON";
+  }
+}

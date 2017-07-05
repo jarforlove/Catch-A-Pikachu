@@ -15,3 +15,8 @@
 
 1. JavaScript
 2. HTML5 canvas
+
+## Sound Effects
+
+- [Background music: Imagine My Shock by SukiWukiDookie](http://www.newgrounds.com/audio/listen/751384)
+- [Sound effects: By Sound Bible](http://soundbible.com/free-sound-effects-1.html)
