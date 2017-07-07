@@ -10,9 +10,12 @@ var data = {
   'ENEMY_MIN_SPEED': 100,
   'ENEMY_MAX_SPEED': 300,
   'PLAYER_STARTING_X': 303,
-  'PLAYER_STARTING_Y': 485
+  'PLAYER_STARTING_Y': 485,
+  'NUM_OF_POKEBALLS': 6,
+  'NUM_OF_ROCKS':3
 };
 
+// Set the ememy sprite list
 var enemySpriteList = [
   'images/Blastoise-80.png',
   'images/Bulbasaur-80.png',
@@ -22,6 +25,7 @@ var enemySpriteList = [
   'images/Gliscor-80.png',
 ];
 
+// Set pedestal sprite state to be either empty or full
 var pedestalSpriteState = {
   empty: 'images/blank.png',
   full: 'images/pikachu-catched_pedestal.png'
@@ -37,14 +41,78 @@ var  fizzle = new Audio('sounds/fizzle.mp3'),
      background = new Audio('sounds/background.mp3');
     //  = new Audio('sounds/')
 background.loop = true;
-background.volume = 0.3;
 
-// This object manages game state
+/* This Class manages game state.
+ *
+ */
 var State = function() {
-
+  this.gameOn = false;
 };
 
-// Enemies our player must avoid
+// When game starts, play this function. Since gameOn is false, the update() does not updates, but render() renders. Therefore you need to hide pikachu and pokeball. And waits for player to click the play button.
+State.prototype.intro = function() {
+  // No need to hide the enemies because they are all off-screen somewhere between x=-101 and x=-505; Also no need to hide rocks because the list is not filled yet.
+  pikachu.hide();
+  player.hide();
+};
+
+State.prototype.restart = function() {
+  // set the game state to be on so that the main function starts updateing.
+  this.gameOn = true;
+  // Since player and Pikachu are purposefully hidden, now show them
+  player.reset();
+  pikachu.reset();
+  // Instantiate the rocks.
+  for (var i=0; i < randomInt(1,3); i++){
+    rocks.push(new Obstacle());
+  }
+  // re-fill the allEnemies list
+  // Don't make JavaScript read the length of an array at every iteration of a for loop. Store the length value in a different variable.
+  for (var i = 0, j = enemySpriteList.length; i < j; i++) {
+    allEnemies.push(new Enemy(enemySpriteList[i]));
+  }
+  // re-fill the pokeballBar
+  player.numOfPokeballs=data.NUM_OF_POKEBALLS;
+}
+
+// When player runs out of pokeball, this function gets executed.
+State.prototype.lose = function() {
+  // First set state.gameOn to false, so the game stops updating
+  this.gameOn=false;
+  // clear all objects off the canvas
+  allEnemies = [];
+  // Don't forget to stuff the first and last tile of pedestals. Otherwise after your first win, you will have to fill the first and second tile.
+  allPedestals = [];
+  allPedestals.push(new Pedestal(0, pedestalSpriteState.empty));
+  allPedestals.push(new Pedestal(606, pedestalSpriteState.empty));
+  pikachu.hide();
+  player.hide();
+  rocks = [];
+  // make the lose page show
+  document.getElementById('lose').classList.toggle('hidden');
+};
+
+// When player fill all pedestals, this function gets executed.
+State.prototype.win = function() {
+  // if win, first stop update() from updating
+  this.gameOn=false;
+  // clear all objects off the canvas
+  allEnemies = [];
+  // Don't forget to stuff the first and last tile of pedestals. Otherwise after your first win, you will have to fill the first and second tile.
+  allPedestals = [];
+  allPedestals.push(new Pedestal(0, pedestalSpriteState.empty));
+  allPedestals.push(new Pedestal(606, pedestalSpriteState.empty));
+  pikachu.hide();
+  player.hide();
+  rocks = [];
+  // make the win page show
+  document.getElementById('win').classList.toggle('hidden');
+};
+
+
+/* Enemies our player must avoid
+ *
+ */
 var Enemy = function(sprite) {
   // Variables applied to each of our instances go here,
   // we've provided one for you to get started
@@ -74,24 +142,33 @@ Enemy.prototype.reset = function() {
   // a new enemy will have a random starting x position
   this.x = randomInt(data.ENEMY_MIN_STARTING_X, data.ENEMY_MAX_STARTING_X);
   // a new enemy will be randomly positioned in one of the three lanes
-  this.y = data.Y_POSITIONS[randomYPosition()];
+  this.y = data.Y_POSITIONS[randomInt(0, 4)];
   // a new enemy will have a random speed
   this.speed = randomInt(data.ENEMY_MIN_SPEED, data.ENEMY_MAX_SPEED);
-}
+};
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
+/* Now write your own player class
+ *
+ */
 var Player = function() {
   this.sprite = 'images/pokeball-45.png';
   this.x = data.PLAYER_STARTING_X;
   this.y = data.PLAYER_STARTING_Y;
-  this.numOfPokeballs = 5;
+  this.catch = false;
+  this.numOfPokeballs = data.NUM_OF_POKEBALLS;
+};
+
+
+// Each time this function is called, the player goes back to the original starting location.
+Player.prototype.reset = function() {
+  this.sprite = 'images/pokeball-45.png';
+  this.x = data.PLAYER_STARTING_X;
+  this.y = data.PLAYER_STARTING_Y;
   this.catch = false;
 };
 
@@ -101,50 +178,43 @@ Player.prototype.handleInput = function(input) {
     case 'left':
       if (this.x >= 101) {
         this.x = this.x - 101;
-      } else {
-        break;
       }
       break;
     case 'up':
       // No matter the player catches pikachu or not, he can goes up to the second row
       if (this.y >= 153) {
         this.y = this.y - 83;
-        // When at second row, if the player catches pikachu, he can go a step further
+        // When at second row, if the player catches pikachu, he can go a step further. Now hands to updatePedestalsState() to handle player
       } else if (this.y === 70 && this.catch === true) {
-        //If the player reaches the river, and play goes back to the starting point
         this.y = this.y -83;
       }
       break;
     case 'right':
       if (this.x <= 505) {
         this.x = this.x + 101;
-      } else {
-        break;
       }
       break;
     case 'down':
       if (this.y <= 402) {
         this.y = this.y + 83;
-      } else {
-        break;
       }
       break;
   }
 };
 
-// Updates the number of Pokeballs left. When the number is 0, reset the state of the game.
+// Updates the number of Pokeballs left. When the number is 0, execute state.lose().
 // Attribution: https://github.com/Klammertime/P3-Classic-Arcade-Game-Clone
 Player.prototype.update = function() {
   // getElementsByClassName returns a NodeList
-  var pokeballBar = document.getElementsByClassName('numOfPokeballs'),
+  var pokeballBar = document.getElementsByClassName('pokeballBar'),
   // Since you are going to use replaceChild() method, you have to grab the old child and create a new child.
   // https://developer.mozilla.org/en-US/docs/Web/API/Node/replaceChild
       oldChild = document.getElementById('child'),
       newChild = document.createElement('div'),
       img;
       // must have this line of code below, so that in a loop, the 'old' child will always have that ID.
-      newChild.id = 'child'
-  for (var k=0; k < player.numOfPokeballs; k++) {
+      newChild.id = 'child';
+  for (var i=0; i < this.numOfPokeballs; i++) {
     // HTML5 Constructor
     img = new Image();
     img.src = 'images/pokeball-20.png';
@@ -153,19 +223,21 @@ Player.prototype.update = function() {
   }
   // Since pokeballBar is a NodeList and it has only one element. Therefore you have to add to its first element.
   pokeballBar[0].replaceChild(newChild, oldChild);
-  // when the number is 0, reset the state of the game.
+  // when the number is 0, reset the game.
   if (this.numOfPokeballs === 0) {
-    window.alert("Game over!");
-    document.location.reload();
+    // Trigger Lose state.
+    state.lose();
+    // Updates the numOfPokeballs bar texts.
+    var noChild = document.createElement('div'),
+        oldChild2 = document.getElementById('child');
+    noChild.id = 'child';
+    noChild.innerHTML = 'no pokeball';
+    pokeballBar[0].replaceChild(noChild, oldChild2);
   }
 };
 
-// Each time this function is called, the player goes back to the original starting location.
-Player.prototype.reset = function() {
-  this.x = data.PLAYER_STARTING_X;
-  this.y = data.PLAYER_STARTING_Y;
-  this.sprite = 'images/pokeball-45.png';
-  this.catch = false;
+Player.prototype.hide = function() {
+  this.x = -101;
 };
 
 // This function renders the player in each frame. It also shows the number of pokeballs a player has. Attribution: https://discussions.udacity.com/t/is-it-possible-to-use-ctx-filltext-to-display-score-and-lives/193866
@@ -173,13 +245,14 @@ Player.prototype.render = function() {
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-/* Create pikachu to be catched by the player
+/* Declare Pikachu Class, which is to be catched by the player
  *
  */
 var Pikachu = function() {
   // Image Attribution: http://www.pokemon.name
   this.sprite = 'images/pikachu-80.png';
-  this.reset();
+  this.x = randomInt(0, 6) * 101;
+  this.y = data.Y_POSITIONS[randomInt(0,4)];
 };
 
 
@@ -195,7 +268,11 @@ Pikachu.prototype.catched = function() {
 // Make pikachu appear on the canvas again
 Pikachu.prototype.reset = function() {
   this.x = randomInt(0, 6) * 101;
-  this.y = data.Y_POSITIONS[randomYPosition()];
+  this.y = data.Y_POSITIONS[randomInt(0,4)];
+};
+
+Pikachu.prototype.hide = function() {
+  this.x = -101;
 };
 
 // Draw this pikachu on the canvas
@@ -203,7 +280,7 @@ Pikachu.prototype.render = function() {
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-/* Create a pedestal object
+/* Declare Pedestal Class
  *
  */
 var Pedestal = function(x, sprite) {
@@ -217,19 +294,31 @@ Pedestal.prototype.render = function() {
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
+/* Declare Obstacle Class
+ * It basically needs all propertities of Pikachu class except catched(); You are not going to use catched() anyway.
+ * Therefore make it a subclass of Pikachu. Only change its sprite.
+ */
+var Obstacle = function() {
+  Pikachu.call(this);
+  this.sprite = 'images/Rock.png';
+  // The Obstacle cannot be in the first row of grass, otherwise it would block player
+  this.y = data.Y_POSITIONS[randomInt(1,4)];
+}
+
+Obstacle.prototype = Object.create(Pikachu.prototype);
+Obstacle.prototype.constructor = Pikachu;
+
 /* Now instantiate your objects.
  * Place all enemy objects in an array called allEnemies
  * Place the player object in a variable called player
  */
+var state = new State(),
+    player = new Player(),
+    pikachu = new Pikachu(),
+    rocks = [];
 var allEnemies = [];
-for (var i = 0; i < enemySpriteList.length; i++) {
-  allEnemies.push(new Enemy(enemySpriteList[i]));
-}
-var player = new Player();
-// declare a new pikachu and give it a random location
-var pikachu = new Pikachu();
-// instantiate a pedestal list
 var allPedestals = [];
+// Since the first and last tile are waters. Fill the pedestal list with black image in these two tiles.
 allPedestals.push(new Pedestal(0, pedestalSpriteState.empty));
 allPedestals.push(new Pedestal(606, pedestalSpriteState.empty));
 
@@ -242,11 +331,6 @@ function randomInt(min, max) {
   // Math.random() return [0, 1)
   // So to be inclusive of min and max, you need to add 1 to the multiplier
   return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
-// This function is used for randomly returning an integer of 0, 1, or 2, 3, 4, which will be used for picking a random y position
-function randomYPosition() {
-  return Math.floor(Math.random() * 5);
 }
 
 /* This listens for key presses and sends the keys to your
@@ -270,11 +354,39 @@ var musicButton = document.getElementById('musicButton');
 musicButton.onclick = function() {
   if (musicButton.classList.contains('music')){
     background.pause();
-    musicButton.classList.remove('music');
+    musicButton.classList.toggle('music');
     musicButton.innerHTML = "MUSIC OFF";
   } else {
     background.play();
-    musicButton.classList.add('music');
+    musicButton.classList.toggle('music');
     musicButton.innerHTML = "MUSIC ON";
   }
-}
+};
+
+// In the intro page, when pressing the play button, game starts
+var play = document.getElementById('play');
+play.onclick = function() {
+  // make the menu page disappear
+  document.getElementById('menu').classList.toggle('hidden');
+  // Show the pokeballBar
+  (document.getElementsByClassName('pokeballBar'))[0].classList.toggle('hidden');
+  // make the background music louder
+  background.volume = 0.3;
+  state.restart();
+};
+
+// In the lose page, when pressing the playAgain button, restart the game
+var playAgain = document.getElementById('playAgain');
+playAgain.onclick = function() {
+  // make the lose page hide again
+  document.getElementById('lose').classList.toggle('hidden');
+  state.restart();
+};
+
+// In the win page, when pressing the playAgain button, restart the game
+var winAgain = document.getElementById('winAgain');
+winAgain.onclick = function() {
+  // make the win page hide again
+  document.getElementById('win').classList.toggle('hidden');
+  state.restart();
+};

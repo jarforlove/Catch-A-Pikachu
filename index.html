@@ -3,18 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="Catch A Pikachu: Arcade Game">
+  <meta name="author" content="Will Shu">
+
   <title>Catch A Pikachu</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <!-- Header -->
   <header>
     <h1 class="header">Pokemon World</h1>
     <a class="music" id="musicButton">MUSIC ON</a>
-    <div class="numOfPokeballs"><div id="child">
-
-    </div></div>
   </header>
+
+  <!-- Canvas -->
   <main id="canvas"></main>
+
+  <!-- Pokeball Bar -->
+  <div class="pokeballBar hidden">You have <div id="child"></div> left.</div>
+
+  <!-- Menu -->
+  <div id="menu" class="onTop">
+    <div class="instructions">
+      <p>Long enough to be seen.</p>
+    </div>
+    <button type="button" id="play">PLAY</button>
+  </div>
+
+  <!-- Lose -->
+  <div id="lose" class="onTop hidden">
+    <img src="src/grunt_src/crying pikachu.png" alt="crying pikachu">
+    <p>You failed the mission. It's Okay. I still love you~</p>
+    <!-- the ID of the button must be different from play. Otherwise later when use document.getElementById('play') it will only pick the first element -->
+    <button type="button" id="playAgain">PLAY AGAIN</button>
+  </div>
+
+  <!-- Win -->
+  <div id="win" class="onTop hidden">
+    <img src="src/grunt_dest/happy pikachu-350.png" alt="crying pikachu">
+    <p>Congratulations! You Win!</p>
+    <button type="button" id="winAgain">PLAY AGAIN</button>
+  </div>
+
+  <!-- footer -->
+  <footer>
+    <a id="developerInfo" href="https://github.com/willshu2049/Classic-Arcade-Game">
+      <p id="developer">Developed by Will Shu </p><img id="githubIcon" src="images/mark-github-white-100.png" alt="">
+    </a>
+  </footer>
+
   <script src="js/resources.js"></script>
   <script src="js/app.js"></script>
   <script src="js/engine.js"></script>

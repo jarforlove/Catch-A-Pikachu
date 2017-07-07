@@ -64,11 +64,14 @@ var Engine = (function(global) {
    * game loop.
    */
   function init() {
+    // play the intro
+    state.intro();
     // reset();
     lastTime = Date.now();
     main();
     // play the background music
     background.play();
+    background.volume = 0.1;
   }
 
   /* This function is called by main (our game loop) and itself calls all
@@ -81,9 +84,11 @@ var Engine = (function(global) {
    * on the entities themselves within your app.js file).
    */
   function update(dt) {
-    updateEntities(dt);
-    checkCollisions();
-    updatePedestalsState();
+    if (state.gameOn) {
+      updateEntities(dt);
+      checkCollisions();
+      updatePedestalsState();
+    }
   }
 
   /* This is called by the update function and loops through all of the
@@ -147,14 +152,22 @@ var Engine = (function(global) {
          }
        });
 
-       // If the pedestal is empty, place the pokeball
+       // If the pedestal is empty, place the pokeball; Otherwise push player down the row.
        if (empty && player.catch) {
          allPedestals.push(new Pedestal(player.x, pedestalSpriteState.full));
          // play score sound
          points.play();
+         // If all pedestals get filled, trigger win state; Otherwise reset the player and update numOfPokeballs
          if (allPedestals.length ===7) {
-           window.alert("Game over!");
-           document.location.reload();
+           // Trigger Win State.
+           state.win();
+           // Updates the pokeballBar texts.
+           var noChild = document.createElement('div'),
+               oldChild2 = document.getElementById('child'),
+               pokeballBar = document.getElementsByClassName('pokeballBar');
+           noChild.id = 'child';
+           noChild.innerHTML = 'no pokeball';
+           pokeballBar[0].replaceChild(noChild, oldChild2);
          } else {
            player.reset();
            pikachu.reset();
@@ -242,9 +255,14 @@ var Engine = (function(global) {
 
     pikachu.render();
 
+    rocks.forEach(function(rock){
+      rock.render();
+    });
+
     renderPedestals();
   }
 
+  // This functions renders pedestals.
   function renderPedestals() {
     allPedestals.forEach(function(pedestal) {
       pedestal.render();
@@ -269,6 +287,7 @@ var Engine = (function(global) {
     'images/grass-block.png',
     'images/pedestal.png',
     'images/blank.png',
+    'images/Rock.png',
     // Image Attribution: https://pixabay.com/en/users/PIRO4D-2707530/
     'images/pokeball-45.png',
     'images/pokeball-20.png',

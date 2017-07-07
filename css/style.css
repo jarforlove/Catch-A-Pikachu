@@ -1,3 +1,141 @@
 body {
-    text-align: center;
+  text-align: center;
+  background-image: url('../src/grunt_dest/8-2400.jpg');
+}
+
+/*
+ * Header
+ */
+header {
+  position: relative;
+  top: 15px;
+  width: 90%;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  color: white;
+}
+
+h1 {
+  text-align: center;
+  /* If you want musicButton to be in the same line as title, you need to set them both to display: inline*/
+  display: inline;
+}
+
+#musicButton {
+  display: inline;
+  float: right;
+  color: grey;
+  position: absolute;
+  right: 0;
+  top: 20%;
+}
+
+#musicButton.music {
+  color: white;
+}
+
+a:hover {
+  cursor: pointer;
+}
+
+/*
+ * Canvas
+ */
+canvas {
+  width: 90%;
+  height: 90%;
+  margin-top: 25px;
+}
+
+/*
+ * Menu, lose, win page
+ */
+.onTop {
+  position: absolute;
+  width: 100%;
+  margin: 25px auto;
+  z-index: 1;
+}
+
+.hidden {
+  display: none;
+}
+
+#menu {
+  top: 160px;
+}
+
+#lose {
+  top: 160px;
+}
+
+#win {
+  top: 160px;
+}
+
+
+/*
+ * Number of Pokeballs
+ */
+.pokeballBar {
+  margin-bottom: 20px;
+  padding-top: 0;
+  color: #202020;
+  font-size: 1.8em;
+}
+
+#child {
+  display: inline;
+}
+
+/*
+ * Footer
+ */
+footer {
+  position: relative;
+  bottom: 0px;
+  width: 90%;
+  left: 0;
+  right: 0;
+  margin: 20px auto 0 auto;
+  color: white;
+}
+
+#developerInfo {
+  color: white;
+}
+
+#developer, #githubIcon {
+  display: inline;
+}
+
+/*
+ * When screen size larger than 785px;
+ */
+@media only screen and (min-width: 785px) {
+  canvas {
+    height: 707px;
+    width: 707px;
+    margin-top: 10px;
+  }
+
+  header {
+    position: relative;
+    top: 15px;
+    width: 707px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+  }
+}
+
+
+/*
+ * When it's on phones
+ */
+@media only screen and (max-width: 500px) {
+  a {
+    font-size: 0.5em;
+  }
 }
