@@ -116,26 +116,38 @@ var Engine = (function(global) {
           // play the punch sound
           punch.play();
           player.numOfPokeballs--;
-          // If collision happens, calls the reset() function in engine.js
+          // If collision happens, reset player and pikachu. Don't reset gems.
           player.reset();
           pikachu.reset();
         } else {
           // play the punch sound
           punch.play();
           player.numOfPokeballs--;
-          // If collision happens, calls the reset() function in engine.js
+          // If collision happens, reset player.
           player.reset();
         }
       }
     });
-
-    // Collision detection for pikachu.
+    // Collision detection for pikachu
     if (pikachu.x < player.x + 50 && pikachu.x + 50 > player.x && pikachu.y < player.y + 50 && pikachu.y + 50 > player.y) {
       // If collision happens, catch number ++ and reset pikachu's location
       pikachu.catched();
       // play the fizzle sound
       fizzle.play();
     }
+    // Collision detection for psyduck
+    gems.forEach(function(gem){
+      if (gem.x < player.x + 50 && gem.x + 50 > player.x && gem.y < player.y + 50 && gem.y + 50 > player.y) {
+        if (gem.sprite === 'images/Psyduck-80.png') {
+          // if player collides with psyduck. execute state.lose()
+          state.lose();
+        } else {
+          // if player collisdes with snorlax. numOfPokeballs++.
+          player.numOfPokeballs++;
+          gem.hide();
+        }
+      }
+    });
   }
 
   /* This functions update states for the pedestals
@@ -169,7 +181,12 @@ var Engine = (function(global) {
            noChild.innerHTML = 'no pokeball';
            pokeballBar[0].replaceChild(noChild, oldChild2);
          } else {
+           // You've put one catched pikachu in the pedestal. Now reset everything.
            player.reset();
+           gems = [];
+           for (var j=0; j < randomInt(1,2); j++){
+             gems.push(new Gem());
+           }
            pikachu.reset();
            player.numOfPokeballs--;
          }
@@ -247,6 +264,19 @@ var Engine = (function(global) {
     /* Loop through all of the objects within the allEnemies array and call
      * the render function you have defined.
      */
+
+    rocks.forEach(function(rock){
+     rock.render();
+    });
+
+    gems.forEach(function(gem){
+      rocks.forEach(function(rock){
+        if (gem.x !== rock.x){
+          gem.render();
+        }
+      });
+    });
+
     allEnemies.forEach(function(enemy) {
       enemy.render();
     });
@@ -254,10 +284,6 @@ var Engine = (function(global) {
     player.render();
 
     pikachu.render();
-
-    rocks.forEach(function(rock){
-      rock.render();
-    });
 
     renderPedestals();
   }
@@ -303,7 +329,11 @@ var Engine = (function(global) {
     'images/Charizard-80.png',
     'images/Metapod-80.png',
     'images/Poliwrath-80.png',
-    'images/Gliscor-80.png'
+    'images/Gyarados-80.png',
+    'images/Gliscor-80.png',
+    // Below are the gems
+    'images/Psyduck-80.png',
+    'images/Snorlax-80.png'
   ]);
   Resources.onReady(init);
 
