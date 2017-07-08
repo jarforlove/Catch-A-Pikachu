@@ -1,6 +1,28 @@
+/* Fonts
+ * Attribution: http://www.dafont.com/pokemon.font
+ */
+
+@font-face {
+	font-family: 'Pokemon Solid';
+	src: url('fonts/Pokemon Solid.eot'); /* IE9 Compat Modes */
+  /* The local(☺︎) is a css hack to divert IE6-8 from downloading fonts it can't use (it can only use fonts in EOT format). */
+	src: local('☺'), url('fonts/Pokemon Solid.woff') format('woff'), /* Modern Browsers */
+       url('fonts/Pokemon Solid.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('fonts/Pokemon Solid.svg') format('svg'); /* Legacy iOS */
+	font-weight: normal;
+	font-style: normal;
+}
+
+/* Styles
+ *
+ */
+
 body {
   text-align: center;
-  background-image: url('../src/grunt_dest/8-2400.jpg');
+  background-color: #333333;
+  font-family: 'Pokemon Solid';
+  color: #ffcb05;
+  text-shadow: -2px 0 #3169b1, 0 2px #3169b1, 2px 0 #3169b1, 0 -1px #3169b1;
 }
 
 /*
@@ -9,30 +31,26 @@ body {
 header {
   position: relative;
   top: 15px;
-  width: 90%;
+  width: 707px;
   left: 0;
   right: 0;
   margin: 0 auto;
-  color: white;
-}
-
-h1 {
-  text-align: center;
-  /* If you want musicButton to be in the same line as title, you need to set them both to display: inline*/
-  display: inline;
 }
 
 #musicButton {
-  display: inline;
+  /* If there is another block element in musicButton's parent div, such as h1, then for musicButton to be in the same line as title, you need to set them both to display: inline. However after modification you replace h1 with img tag, therefore no need to put display: inline here.*/
+  /*display: inline;*/
   float: right;
   color: grey;
+  text-shadow: none;
   position: absolute;
   right: 0;
   top: 20%;
 }
 
 #musicButton.music {
-  color: white;
+  color: #ffcb05;
+  text-shadow: -2px 0 #3169b1, 0 2px #3169b1, 2px 0 #3169b1, 0 -1px #3169b1;
 }
 
 a:hover {
@@ -43,9 +61,8 @@ a:hover {
  * Canvas
  */
 canvas {
-  width: 90%;
-  height: 90%;
-  margin-top: 25px;
+ height: 707px;
+ width: 707px;
 }
 
 /*
@@ -63,26 +80,42 @@ canvas {
 }
 
 #menu {
-  top: 160px;
+  top: 220px;
 }
 
 #lose {
-  top: 160px;
+  top: 240px;
 }
 
 #win {
-  top: 160px;
+  top: 200px;
 }
 
+/* the play & playAgain button */
+#play, #playAgain, #winAgain {
+  font-family: 'Pokemon Solid';
+  font-size: 24px;
+  padding: 15px 24px;
+  line-height: 1.33333;
+  border-radius: 6px;
+  color: #ffcb05;
+  text-shadow: -1px 0 blue, 0 1px blue, 1px 0 blue, 0 -1px blue;
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.15), 0 2px 2px rgba(0,0,0,.075);
+
+  background-color: Transparent;
+  background-repeat:no-repeat;
+  border: none;
+  cursor:pointer;
+  overflow: hidden;
+  outline:none;
+}
 
 /*
  * Number of Pokeballs
  */
 .pokeballBar {
-  margin-bottom: 20px;
-  padding-top: 0;
-  color: #202020;
-  font-size: 1.8em;
+  margin-bottom: 30px;
+  font-size: 1.4em;
 }
 
 #child {
@@ -99,11 +132,11 @@ footer {
   left: 0;
   right: 0;
   margin: 20px auto 0 auto;
-  color: white;
 }
 
 #developerInfo {
-  color: white;
+  font-weight: 100;
+  color: #ffcb05;
 }
 
 #developer, #githubIcon {
@@ -111,31 +144,70 @@ footer {
 }
 
 /*
- * When screen size larger than 785px;
+ * When it's on phones. No need to put in a ipad mode, since ipad has width of 768, bigger than 707.
  */
-@media only screen and (min-width: 785px) {
+@media only screen and (max-width: 709px) {
+  /*
+   * Header with in iphone must be 90% of view port
+   */
+  header {
+    width: 90%;
+  }
+
   canvas {
-    height: 707px;
-    width: 707px;
+    height: 345px;
+    width: 345px;
     margin-top: 10px;
   }
 
-  header {
-    position: relative;
-    top: 15px;
-    width: 707px;
-    left: 0;
-    right: 0;
-    margin: 0 auto;
-  }
-}
-
-
-/*
- * When it's on phones
- */
-@media only screen and (max-width: 500px) {
-  a {
+  #musicButton {
     font-size: 0.5em;
+  }
+
+  #menu, #lose, #win {
+    top: 140px;
+    font-size: 0.5em;
+    font-family: sans-serif;
+    text-shadow: -1px 0 #3169b1, 0 1px #3169b1, 1px 0 #3169b1, 0 -1px #3169b1;
+  }
+
+  #lose, #win {
+    top: 160px;
+  }
+
+  .pikachuImage {
+    max-width: 50%;
+  }
+
+  /* the play & playAgain button */
+  #play, #playAgain, #winAgain {
+    font-family: 'Pokemon Solid';
+    font-size: 0.8em;
+    padding: 8px 14px;
+    line-height: 1.33333;
+    border-radius: 6px;
+    color: #ffcb05;
+    text-shadow: -1px 0 blue, 0 1px blue, 1px 0 blue, 0 -1px blue;
+    box-shadow: inset 0 2px 0 rgba(255,255,255,.15), 0 2px 2px rgba(0,0,0,.075);
+
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+  }
+
+  /*
+   * Number of Pokeballs
+   */
+  .pokeballBar {
+    margin-bottom: 20px;
+    padding-top: 0;
+    font-size: 0.5em;
+  }
+
+  #developerInfo {
+    font-size: 0.65em;
   }
 }
