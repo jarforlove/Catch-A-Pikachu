@@ -1,20 +1,32 @@
-# Udacity Classic Arcade Game Clone
+# Arcade Game: Catch A Pikachu
 
 ## All the Steps Required to Run the Application
 
-1. Download the Github repository
-2. Open index.HTML
+To play the game, you may visit: https://willshu2049.github.io/Catch-A-Pikachu/
+Or if you want to run it locally, you may:
+  1. Download the Github repository
+  2. Open index.HTML
 
 ## How to Play the Game
 
-1. The goal is to reach the water at the top of the page.
-2. Use the keyboard's arrow keys to move the player. When the player reaches the water, the player's number of wins will increase by 1. And the player will return to the starting point.
-3. Avoid the bugs. When hit by a bug, the player's number of lives will reduce by 1, and the player will return to the starting point. When number of lives equals to 0, the player will start over again, and number of lives set to 5, number of wins to 0.
+1. The goal is to catch pikachus and take them to the shrines at the top row.
+2. Use the keyboard's arrow keys to move the pokeball. Avoid other moving pokemons because pikachu is what you are after. When you hit one of those moving pokemons, you lose one pokeball. You may see the number of empty pokeballs below the canvas.
+3. The game setting also includes rocks, snorlaxes(good) and pyducks(bad).
+  - You can only move around rocks.
+  - If you catch a snorlax, it will gift you one pokeball.
+  - Pyducks are extremely dangerous, I would not suggest catching them.
 
 ## Technologies
 
 1. JavaScript
+  - Modular Patterns. Closures.
+  - Shortcut Notations
+  - Easy Configuration and customization
+  - Strict Coding Style
+  - Optimized Loops (No Forced Synchronized Layout)
 2. HTML5 canvas
+3. Build Tools: Grunt
+4. Photo Editing: GIMP
 
 ## Sound Effects
 
