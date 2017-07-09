@@ -80,7 +80,25 @@ canvas {
 }
 
 #menu {
-  top: 220px;
+  top: 190px;
+	font-family: sans-serif;
+}
+
+.instructions {
+	margin-bottom: 16px;
+}
+
+.instructions p, .instructions img {
+	display: inline;
+	font-size: 1.4em;
+}
+
+.instructions p {
+	vertical-align: 40%;
+}
+
+.sub p {
+	font-size: 1em;
 }
 
 #lose {
@@ -136,11 +154,17 @@ footer {
 
 #developerInfo {
   font-weight: 100;
-  color: #ffcb05;
+  color: white;
+  font-family: sans-serif;
+  text-shadow: none;
 }
 
 #developer, #githubIcon {
   display: inline;
+}
+
+#developer {
+	vertical-align: 40%;
 }
 
 /*
@@ -154,6 +178,10 @@ footer {
     width: 90%;
   }
 
+	header img {
+		width: 100px;
+	}
+
   canvas {
     height: 345px;
     width: 345px;
@@ -165,37 +193,44 @@ footer {
   }
 
   #menu, #lose, #win {
-    top: 140px;
-    font-size: 0.5em;
+    top: 95px;
+    font-size: 0.6em;
     font-family: sans-serif;
     text-shadow: -1px 0 #3169b1, 0 1px #3169b1, 1px 0 #3169b1, 0 -1px #3169b1;
   }
 
   #lose, #win {
-    top: 160px;
+    top: 125px;
   }
 
   .pikachuImage {
     max-width: 50%;
   }
 
+	.instructions {
+		margin-bottom: 7px;
+	}
+
+	.instructions p {
+		font-size: 1.2em;
+	}
+
+	.sub p {
+		font-size: 1em;
+	}
+
+	.instructions img {
+		width: 20px;
+	}
+
+	.instructions .pokeball {
+		width: 12px;
+	}
+
   /* the play & playAgain button */
   #play, #playAgain, #winAgain {
-    font-family: 'Pokemon Solid';
     font-size: 0.8em;
     padding: 8px 14px;
-    line-height: 1.33333;
-    border-radius: 6px;
-    color: #ffcb05;
-    text-shadow: -1px 0 blue, 0 1px blue, 1px 0 blue, 0 -1px blue;
-    box-shadow: inset 0 2px 0 rgba(255,255,255,.15), 0 2px 2px rgba(0,0,0,.075);
-
-    background-color: Transparent;
-    background-repeat:no-repeat;
-    border: none;
-    cursor:pointer;
-    overflow: hidden;
-    outline:none;
   }
 
   /*
@@ -210,4 +245,12 @@ footer {
   #developerInfo {
     font-size: 0.65em;
   }
+
+	#developer {
+		vertical-align: 30%;
+	}
+
+	#githubIcon {
+		width: 21px;
+	}
 }

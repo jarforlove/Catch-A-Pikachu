@@ -11,8 +11,7 @@ var data = {
   'ENEMY_MAX_SPEED': 300,
   'PLAYER_STARTING_X': 303,
   'PLAYER_STARTING_Y': 480,
-  'NUM_OF_POKEBALLS': 6,
-  'NUM_OF_ROCKS':3
+  'NUM_OF_POKEBALLS': 5
 };
 
 // Set the ememy sprite list.
@@ -22,6 +21,7 @@ var enemySpriteList = [
   'images/Charizard-80.png',
   'images/Metapod-80.png',
   'images/Poliwrath-80.png',
+  'images/Weezing-80.png',
   'images/Gliscor-80.png'
 ];
 
@@ -31,21 +31,30 @@ var gemSpriteList = [
   'images/Snorlax-80.png'
 ];
 
-// Set pedestal sprite state to be either empty or full.
-var pedestalSpriteState = {
+// Set shrine sprite state to be either empty or full.
+var shrineSpriteState = {
   empty: 'images/blank.png',
-  full: 'images/pikachu-catched_pedestal.png'
+  full: 'images/pikachu-catched_shrine.png'
 };
 
 // About audio: http://www.w3school.com.cn/jsref/dom_obj_audio.asp
 // About audio: https://stackoverflow.com/questions/9419263/playing-audio-with-javascript
 // Sound attribution: [Background music: Imagine My Shock by SukiWukiDookie](http://www.newgrounds.com/audio/listen/751384)
 // Sound attribution: [Sound effects: By Sound Bible](http://soundbible.com/free-sound-effects-1.html)
+    // when you catch pikachu
 var  fizzle = new Audio('sounds/fizzle.mp3'),
+    // when you hit an enemy
      punch = new Audio('sounds/punch.mp3'),
+    // when you put pokeball inside a shrine
      points = new Audio('sounds/points.mp3'),
+    // when you catch snorlax
+     gemCollected = new Audio('sounds/gem.mp3'),
+    // when you win
+     achievement = new Audio('sounds/achievement.mp3'),
+    // when you lose
+     failMusic = new Audio('sounds/gong.mp3'),
+    // background music
      background = new Audio('sounds/background.mp3');
-    //  = new Audio('sounds/')
 background.loop = true;
 
 /* This Class manages game state.
@@ -67,11 +76,11 @@ State.prototype.restart = function() {
   this.gameOn = true;
   // Since player and Pikachu are purposefully hidden, now show them.
   player.reset();
-  // Instantiate the rocks.
+  // Instantiate the rocks. Numbers of rocks.
   for (var i=0; i < randomInt(2,3); i++){
     rocks.push(new Obstacle());
   }
-  // Instantiate the gems. No need to worry about gems coinciding with rocks. You will hide it on the rendering level.
+  // Instantiate the gems. Number of Gems. No need to worry about gems coinciding with rocks. You will hide it on the rendering level.
   for (var j=0; j < randomInt(1,2); j++){
     gems.push(new Gem());
   }
@@ -92,34 +101,42 @@ State.prototype.lose = function() {
   this.gameOn=false;
   // clear all objects off the canvas.
   allEnemies = [];
-  // Don't forget to stuff the first and last tile of pedestals. Otherwise after your first win, you will have to fill the first and second tile.
-  allPedestals = [];
-  allPedestals.push(new Pedestal(0, pedestalSpriteState.empty));
-  allPedestals.push(new Pedestal(606, pedestalSpriteState.empty));
+  // Don't forget to stuff the first and last tile of shrines. Otherwise after your first win, you will have to fill the first and second tile.
+  allShrines = [];
+  allShrines.push(new Shrine(0, shrineSpriteState.empty));
+  allShrines.push(new Shrine(606, shrineSpriteState.empty));
   pikachu.hide();
   player.hide();
   rocks = [];
   gems = [];
   // make the lose page show
   document.getElementById('lose').classList.toggle('hidden');
+  // Stop the background music, play the fail music, and then play background music again.
+  background.pause();
+  failMusic.play();
+  setTimeout('background.play()',3000);
 };
 
-// When player fill all pedestals, this function gets executed.
+// When player fill all shrines, this function gets executed.
 State.prototype.win = function() {
   // if win, first stop update() from updating.
   this.gameOn=false;
   // clear all objects off the canvas.
   allEnemies = [];
-  // Don't forget to stuff the first and last tile of pedestals. Otherwise after your first win, you will have to fill the first and second tile.
-  allPedestals = [];
-  allPedestals.push(new Pedestal(0, pedestalSpriteState.empty));
-  allPedestals.push(new Pedestal(606, pedestalSpriteState.empty));
+  // Don't forget to stuff the first and last tile of shrines. Otherwise after your first win, you will have to fill the first and second tile.
+  allShrines = [];
+  allShrines.push(new Shrine(0, shrineSpriteState.empty));
+  allShrines.push(new Shrine(606, shrineSpriteState.empty));
   pikachu.hide();
   player.hide();
   rocks = [];
   gems = [];
   // make the win page show.
   document.getElementById('win').classList.toggle('hidden');
+  // Stop the background music, play the achievement music, and then play background music again.
+  background.pause();
+  achievement.play();
+  setTimeout('background.play()',2000);
 };
 
 
@@ -205,7 +222,7 @@ Player.prototype.handleInput = function(input) {
       // No matter the player catches pikachu or not, he can goes up to the second row.
       if (self.y >= 148) {
         self.y = self.y - 83;
-        // When at second row, if the player catches pikachu, he can go a step further. Now hands to updatePedestalsState() to handle player.
+        // When at second row, if the player catches pikachu, he can go a step further. Now hands to updateShrinesState() to handle player.
       } else if (self.y === 65 && self.catch === true) {
         self.y = self.y -83;
       }
@@ -351,22 +368,23 @@ Obstacle.prototype.constructor = Pikachu;
 var Gem = function() {
   Pikachu.call(this);
   this.sprite = gemSpriteList[randomInt(0, 2)];
-}
+  this.y = data.Y_POSITIONS[randomInt(1,4)];
+};
 
 Gem.prototype = Object.create(Pikachu.prototype);
 Gem.prototype.constructor = Pikachu;
 
-/* Declare Pedestal Class.
+/* Declare Shrine Class.
  *
  */
-var Pedestal = function(x, sprite) {
+var Shrine = function(x, sprite) {
   this.x = x;
   this.y = 0;
   this.sprite = sprite;
 };
 
 //Draw pokeball on scoring row.
-Pedestal.prototype.render = function() {
+Shrine.prototype.render = function() {
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
@@ -380,10 +398,10 @@ var state = new State(),
     rocks = [],
     gems = [],
     allEnemies = [],
-    allPedestals = [];
-// Since the first and last tile are waters. Fill the pedestal list with black image in these two tiles.
-allPedestals.push(new Pedestal(0, pedestalSpriteState.empty));
-allPedestals.push(new Pedestal(606, pedestalSpriteState.empty));
+    allShrines = [];
+// Since the first and last tile are waters. Fill the shrine list with black image in these two tiles.
+allShrines.push(new Shrine(0, shrineSpriteState.empty));
+allShrines.push(new Shrine(606, shrineSpriteState.empty));
 
 /* Helper functions below.
  *
@@ -436,7 +454,7 @@ document.getElementById('play').onclick = function() {
   // Show the pokeballBar.
   (document.getElementsByClassName('pokeballBar'))[0].classList.toggle('hidden');
   // make the background music louder.
-  background.volume = 0.3;
+  background.volume = 0.4;
   state.restart();
 };
 

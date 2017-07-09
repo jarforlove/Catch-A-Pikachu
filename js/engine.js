@@ -71,7 +71,7 @@ var Engine = (function(global) {
     main();
     // play the background music
     background.play();
-    background.volume = 0.1;
+    background.volume = 0.2;
   }
 
   /* This function is called by main (our game loop) and itself calls all
@@ -87,7 +87,7 @@ var Engine = (function(global) {
     if (state.gameOn) {
       updateEntities(dt);
       checkCollisions();
-      updatePedestalsState();
+      updateShrinesState();
     }
   }
 
@@ -108,7 +108,7 @@ var Engine = (function(global) {
   /* This function checks collision
    */
   function checkCollisions() {
-    // Collision detection for bug. Set the width to 50 so player and bug are not going to collide too soon.
+    // Collision detection for enemies. Set the width to 50 so player and bug are not going to collide too soon.
     allEnemies.forEach(function(enemy) {
       if (enemy.x < player.x + 50 && enemy.x + 50 > player.x && enemy.y < player.y + 50 && enemy.y + 50 > player.y) {
         // remember '=' is assignment. When at first you use '=', it doesn't work out right.
@@ -135,7 +135,7 @@ var Engine = (function(global) {
       // play the fizzle sound
       fizzle.play();
     }
-    // Collision detection for psyduck
+    // Collision detection for gems
     gems.forEach(function(gem){
       if (gem.x < player.x + 50 && gem.x + 50 > player.x && gem.y < player.y + 50 && gem.y + 50 > player.y) {
         if (gem.sprite === 'images/Psyduck-80.png') {
@@ -144,33 +144,34 @@ var Engine = (function(global) {
         } else {
           // if player collisdes with snorlax. numOfPokeballs++.
           player.numOfPokeballs++;
+          gemCollected.play();
           gem.hide();
         }
       }
     });
   }
 
-  /* This functions update states for the pedestals
+  /* This functions update states for the shrines
    * Attribution: https://github.com/Sentry71/arcade
    */
-   function updatePedestalsState() {
-     // Check if the player has reached the pedestal
+   function updateShrinesState() {
+     // Check if the player has reached the shrine
      if (player.y < 0) {
-       // Check if the pedestal is empty
+       // Check if the shrine is empty
        var empty = true;
-       allPedestals.forEach(function(pedestal) {
-         if (player.x === pedestal.x) {
+       allShrines.forEach(function(shrine) {
+         if (player.x === shrine.x) {
            empty = false;
          }
        });
 
-       // If the pedestal is empty, place the pokeball; Otherwise push player down the row.
+       // If the shrine is empty, place the pokeball; Otherwise push player down the row.
        if (empty && player.catch) {
-         allPedestals.push(new Pedestal(player.x, pedestalSpriteState.full));
+         allShrines.push(new Shrine(player.x, shrineSpriteState.full));
          // play score sound
          points.play();
-         // If all pedestals get filled, trigger win state; Otherwise reset the player and update numOfPokeballs
-         if (allPedestals.length ===7) {
+         // If all shrines get filled, trigger win state; Otherwise reset the player and update numOfPokeballs
+         if (allShrines.length ===7) {
            // Trigger Win State.
            state.win();
            // Updates the pokeballBar texts.
@@ -181,7 +182,7 @@ var Engine = (function(global) {
            noChild.innerHTML = 'no pokeball';
            pokeballBar[0].replaceChild(noChild, oldChild2);
          } else {
-           // You've put one catched pikachu in the pedestal. Now reset everything.
+           // You've put one catched pikachu in the shrine. Now reset everything.
            player.reset();
            gems = [];
            for (var j=0; j < randomInt(1,2); j++){
@@ -191,7 +192,7 @@ var Engine = (function(global) {
            player.numOfPokeballs--;
          }
        } else {
-      // If the pedestal is occupied, then push player down the row.
+      // If the shrine is occupied, then push player down the row.
          player.y +=83;
        }
      }
@@ -210,11 +211,11 @@ var Engine = (function(global) {
      */
     var topRowImages = [
           'images/water-block.png', // First tile of the top row is water
-          'images/pedestal.png',    // Second tile of the top row is pedestal
-          'images/pedestal.png',    // ..
-          'images/pedestal.png',    // ..
-          'images/pedestal.png',    // ..
-          'images/pedestal.png',    // Sixth tile of the top row is pedestal
+          'images/shrine.png',    // Second tile of the top row is shrine
+          'images/shrine.png',    // ..
+          'images/shrine.png',    // ..
+          'images/shrine.png',    // ..
+          'images/shrine.png',    // Sixth tile of the top row is shrine
           'images/water-block.png'  // Last tile of the top row is water
         ],
         rowImages = [
@@ -267,14 +268,11 @@ var Engine = (function(global) {
 
     rocks.forEach(function(rock){
      rock.render();
-    });
-
-    gems.forEach(function(gem){
-      rocks.forEach(function(rock){
-        if (gem.x !== rock.x){
-          gem.render();
-        }
-      });
+     gems.forEach(function(gem){
+       if (gem.x !== rock.x || gem.y !== rock.y){
+         gem.render();
+       }
+     });
     });
 
     allEnemies.forEach(function(enemy) {
@@ -285,13 +283,13 @@ var Engine = (function(global) {
 
     pikachu.render();
 
-    renderPedestals();
+    renderShrines();
   }
 
-  // This functions renders pedestals.
-  function renderPedestals() {
-    allPedestals.forEach(function(pedestal) {
-      pedestal.render();
+  // This functions renders shrines.
+  function renderShrines() {
+    allShrines.forEach(function(shrine) {
+      shrine.render();
     });
   }
 
@@ -311,7 +309,7 @@ var Engine = (function(global) {
     'images/stone-block.png',
     'images/water-block.png',
     'images/grass-block.png',
-    'images/pedestal.png',
+    'images/shrine.png',
     'images/blank.png',
     'images/Rock.png',
     // Image Attribution: https://pixabay.com/en/users/PIRO4D-2707530/
@@ -320,7 +318,7 @@ var Engine = (function(global) {
     // Image Attribution: http://www.pokemon.name
     // Note either pokeball and pikachu-catched is 45X45, and 82 to the top.
     'images/pikachu-catched.png',
-    'images/pikachu-catched_pedestal.png',
+    'images/pikachu-catched_shrine.png',
     // Note all pokemons is 80*80, and 70 to the top.
     'images/pikachu-80.png',
     // Below are the enemies
@@ -329,7 +327,7 @@ var Engine = (function(global) {
     'images/Charizard-80.png',
     'images/Metapod-80.png',
     'images/Poliwrath-80.png',
-    'images/Gyarados-80.png',
+    'images/Weezing-80.png',
     'images/Gliscor-80.png',
     // Below are the gems
     'images/Psyduck-80.png',

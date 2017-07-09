@@ -13,7 +13,8 @@
 <body>
   <!-- Header -->
   <header>
-    <h1 class="header">Pokemon World</h1>
+    <img src="images/header-175.png" alt="header">
+    <!-- <h1>Pokemon World</h1> -->
     <a class="music" id="musicButton">MUSIC ON</a>
   </header>
 
@@ -25,25 +26,56 @@
 
   <!-- Menu -->
   <div id="menu" class="onTop">
-    <div class="instructions">
-      <p>Long enough to be seen.</p>
-    </div>
-    <button type="button" id="play">PLAY</button>
+      <h2>Your Mission</h2>
+      <div class="instructions">
+        <p>Use <img class="pokeball" src="images/pokeball-20.png" alt="pokeball"></p>
+        <p> to catch </p>
+        <img src="images/intro/pikachu-45.png" alt="pikachu">
+        <p>. Take it to the </p>
+        <img src="images/intro/shrine-45.png" alt="">
+        <p>.</p>
+      </div>
+      <div class="instructions">
+        <p>Use Arrow Keys to move <img class="pokeball" src="images/pokeball-20.png" alt="pokeball"></p>
+        <p>.</p>
+      </div>
+      <div class="instructions">
+        <p>Avoid other moving pokemons.</p>
+        <img src="images/intro/Blastoise-35.png" alt="Blastoise">
+        <img src="images/intro/Bulbasaur-35.png" alt="Bulbasaur">
+        <img src="images/intro/Charizard-35.png" alt="Charizard">
+        <img src="images/intro/Gliscor-35.png" alt="Gliscor">
+        <img src="images/intro/Metapod-35.png" alt="Metapod">
+        <img src="images/intro/Poliwrath-35.png" alt="Poliwrath">
+        <img src="images/intro/Weezing-35.png" alt="Weezing">
+      </div>
+      <div class="sub instructions">
+        <p>* Catch a </p>
+        <img src="images/intro/Snorlax-35.png" alt="Snorlax">
+        <p>, and you will be gifted one <img class="pokeball" src="images/pokeball-20.png" alt="pokeball"></p>
+        <p>.</p>
+      </div>
+      <div class="sub instructions">
+        <p>*</p>
+        <img src="images/intro/Psyduck-35.png" alt="Psyduck">
+        <p> are extremely dangerous, I'd not suggest catching them.</p>
+      </div>
+    <button type="button" id="play">Play</button>
   </div>
 
   <!-- Lose -->
   <div id="lose" class="onTop hidden">
-    <img src="src/grunt_src/crying pikachu.png" alt="crying pikachu">
+    <img class="pikachuImage" src="images/crying pikachu-350.png" alt="crying pikachu">
     <p>You failed the mission. It's Okay. I still love you~</p>
     <!-- the ID of the button must be different from play. Otherwise later when use document.getElementById('play') it will only pick the first element -->
-    <button type="button" id="playAgain">PLAY AGAIN</button>
+    <button type="button" id="playAgain">Play Again</button>
   </div>
 
   <!-- Win -->
   <div id="win" class="onTop hidden">
-    <img src="src/grunt_dest/happy pikachu-350.png" alt="crying pikachu">
+    <img class="pikachuImage" src="images/happy pikachu-280.png" alt="crying pikachu">
     <p>Congratulations! You Win!</p>
-    <button type="button" id="winAgain">PLAY AGAIN</button>
+    <button type="button" id="winAgain">Play Again</button>
   </div>
 
   <!-- footer -->
